@@ -1,0 +1,209 @@
+// app global css in SCSS form
+html,
+body {
+  height: 100%;
+  overflow: auto;
+  position: relative;
+  margin: 0;
+  font-family: "Montserrat", sans-serif;
+}
+
+.bodyColor {
+  background-color: #e3e3e3;
+}
+
+.radius30 {
+  border-radius: 30px;
+}
+// app global css in SCSS form
+.q-img {
+  height: 80px;
+  width: 140px;
+}
+.blurry {
+  -webkit-backdrop-filter: blur(7px);
+  backdrop-filter: blur(7px);
+  background-color: #ffffff98;
+  color: black;
+}
+
+.mainBG {
+  padding-bottom: 150px;
+  background-color: #f4f4fa;
+  background-image: linear-gradient(#7178ff10 2.2px, transparent 2.2px),
+    linear-gradient(90deg, #7178ff10 2.2px, transparent 2.2px),
+    linear-gradient(#7178ff10 1.1px, transparent 1.1px),
+    linear-gradient(90deg, #7178ff10 1.1px, #e5e5f710 1.1px);
+  background-size: 55px 55px, 55px 55px, 11px 11px, 11px 11px;
+  background-position: -2.2px -2.2px, -2.2px -2.2px, -1.1px -1.1px,
+    -1.1px -1.1px;
+  overflow: hidden;
+}
+
+.dir_section2 {
+  margin-top: -100px;
+  padding-bottom: 100px;
+}
+
+.active-link {
+  color: white;
+  background: #3b3b3b;
+}
+
+.bgMain {
+  color: rgb(80, 80, 80);
+  background: #ffffff;
+}
+
+.dir_header {
+  color: #2e2e7b;
+}
+
+.dir_header .q-img {
+  margin-top: 20px;
+  max-height: 80px;
+  max-width: 80px;
+}
+
+.n {
+  color: #2e2e7b;
+}
+
+.smalllogo {
+  height: 30px;
+  width: 100px;
+}
+
+.n:hover {
+  background: rgba(0, 0, 0, 0) -webkit-gradient(
+      linear,
+      left top,
+      right top,
+      from(#90f3b3),
+      color-stop(#90e9f3),
+      color-stop(#909ff3),
+      color-stop(#cc90f3),
+      color-stop(#f390d1),
+      color-stop(#f39a90),
+      color-stop(#f3e590),
+      to(#b8f390)
+    ) repeat scroll 0% 0%/200% 200%;
+  background: rgba(0, 0, 0, 0)
+    linear-gradient(
+      90deg,
+      #90f3b3,
+      #90e9f3,
+      #909ff3,
+      #cc90f3,
+      #f390d1,
+      #f39a90,
+      #f3e590,
+      #b8f390
+    )
+    repeat scroll 0% 0%/200% 200%;
+  background-clip: border-box;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-animation: GradientAnimation 2s ease infinite;
+  animation: GradientAnimation 2s ease infinite;
+}
+
+@keyframes GradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// cursors start
+.cprogress {
+  cursor: progress;
+}
+
+.cadd {
+  cursor: copy;
+}
+.ccontext {
+  cursor: context-menu;
+}
+// cursors end
+
+//global table template start
+.tableSticky thead tr:first-child th:first-child {
+  /* bg color is important for th; just specify one */
+  background-color: #ffffff;
+}
+.tableSticky td:first-child {
+  background-color: #ffffff;
+}
+.tableSticky th:first-child {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.tableSticky td:first-child {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+// table template end
+// breakpoint variable, from https://quasar.dev/style/breakpoints
+// Except the xs one because I think 600px is too small
+$xs-breakpoint: 718px;
+$sm-breakpoint: 1024px;
+$md-breakpoint: 1439px;
+$lg-breakpoint: 1920px;
+
+.container,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: $xs-breakpoint) {
+  .container,
+  .container-sm {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: $sm-breakpoint) {
+  .container,
+  .container-sm,
+  .container-md {
+    max-width: 800px;
+  }
+}
+
+@media (min-width: $md-breakpoint) {
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg {
+    max-width: 800px;
+  }
+}
+
+@media (min-width: $lg-breakpoint) {
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl {
+    max-width: 840px;
+  }
+}
