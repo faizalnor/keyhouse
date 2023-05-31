@@ -120,6 +120,14 @@ body {
     background-position: 0% 50%;
   }
 }
+.radius {
+  border-radius: 0px 20px 20px 0px;
+}
+
+.q-focusable,
+.q-hoverable {
+  border-radius: 0px 20px 20px 0px;
+}
 
 // cursors start
 .cprogress {

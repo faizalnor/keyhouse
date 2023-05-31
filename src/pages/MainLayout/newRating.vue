@@ -2,12 +2,8 @@
   <q-page padding>
     <div class="container">
       <q-toolbar>
-        <q-icon
-          size="xs"
-          name="add_box"
-          class="q-pb-md material-icons-two-tone"
-        />&nbsp;
-        <div class="text-h6 q-pb-md">{{ this.$route.name }}</div>
+        <q-icon size="xs" name="library_add" class="q-pb-xs text-teal" />&nbsp;
+        <div class="text-h6 q-pb-xs text-teal">{{ this.$route.name }}</div>
       </q-toolbar>
 
       <q-card flat>
@@ -28,12 +24,16 @@
 
             <q-select
               outlined
-              v-model="model"
+              v-model="agencyList"
               use-input
+              color="teal"
               input-debounce="0"
               label="Agency Name"
               :options="options"
+              option-value="cl_name"
+              option-label="cl_name"
               @filter="filterFn"
+              hint="Minimum 2 character"
               behavior="menu"
             >
               <template v-slot:no-option>
@@ -44,7 +44,7 @@
                 </q-item>
               </template>
             </q-select>
-            <q-input outlined v-model="text" label="Scope Title" />
+            <q-input outlined name="text" color="teal" label="Scope Title" />
           </div>
         </q-card-section>
       </q-card>
@@ -53,7 +53,33 @@
 </template>
 
 <script>
+import { ref } from "vue";
+import { api } from "boot/axios";
+
+const stringOptions = [];
+
 export default {
+  setup() {
+    const options = ref(stringOptions);
+    return {
+      agencyList: ref(null),
+      api,
+      options,
+
+      filterFn(val, update, abort) {
+        if (val.length < 1) {
+          abort();
+          return;
+        }
+        update(() => {
+          const needle = val.toLowerCase();
+          options.value = stringOptions.filter(
+            (v) => v.toLowerCase().indexOf(needle) > -1
+          );
+        });
+      },
+    };
+  },
   data: function () {
     return {
       location: null,
@@ -62,7 +88,7 @@ export default {
     };
   },
   created() {
-    //do we support geolocation
+    //start geolocation
     if (!("geolocation" in navigator)) {
       this.errorStr = "Geolocation is not available.";
       return;
@@ -80,6 +106,19 @@ export default {
         this.errorStr = err.message;
       }
     );
+
+    //end geolocation
+  },
+  created: function () {
+    this.fetchAllData();
+  },
+  methods: {
+    fetchAllData: function () {
+      api.get("agencyList.php").then((response) => {
+        this.stringOptions = response.data;
+        console.log(this.stringOptions);
+      });
+    },
   },
 };
 </script>

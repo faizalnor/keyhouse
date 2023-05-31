@@ -1,9 +1,9 @@
 <template>
   <q-layout view="hHh Lpr fFf">
-    <q-header bordered class="bgMain">
+    <q-header bordered class="bg-white text-grey-8 q-py-xs">
       <q-toolbar>
         <q-btn flat @click="drawer = !drawer" dense icon="menu" />
-        <div class="q-pr-xs">
+        <div class="q-pr-xs absolute-center">
           <q-img
             src="../assets/img/logo.svg"
             :style="[
@@ -18,13 +18,14 @@
       </q-toolbar>
     </q-header>
     <q-drawer
+      id="drawer"
       v-model="drawer"
-      bordered
       dense
+      bordered
       show-if-above
       :width="200"
       :breakpoint="651"
-      class="bg-white text-grey-7"
+      class="bg-white q-pr-md"
     >
       <q-scroll-area class="fit">
         <q-list>
@@ -35,10 +36,10 @@
             clickable
             v-ripple
             to="/admin/newRating"
-            active-class="active-link"
+            active-class="bg-teal-1 text-teal radius"
           >
             <q-item-section avatar>
-              <q-icon name="add" />
+              <q-icon name="library_add" />
             </q-item-section>
             <q-item-section> New Rating</q-item-section>
           </q-item>
@@ -47,7 +48,7 @@
             clickable
             v-ripple
             to="/admin/RatingList"
-            active-class="active-link"
+            active-class="bg-teal-1 text-teal radius"
           >
             <q-item-section avatar>
               <q-icon name="star" />
@@ -68,13 +69,13 @@
           <q-img
             src="../assets/img/csm.svg"
             height="30px"
-            width="166px"
+            width="170px"
             alt="Classkit"
           />
         </span>
       </q-toolbar>
     </q-footer>
-    <q-page-container class="bodyColor">
+    <q-page-container class="bg-white">
       <router-view />
     </q-page-container>
   </q-layout>
