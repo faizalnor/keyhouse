@@ -1,15 +1,7 @@
 <?php
+$db = new mysqli('localhost', 'root', 'root', 'pslab');
 
-$servername = "localhost";
-$username = "root";
-$password = "root";
-
-try {
-  $conn = new PDO("mysql:host=$servername;dbname=pslab", $username, $password);
-  // set the PDO error mode to exception
-  $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-} catch(PDOException $e) {
-  echo "Connection failed: " . $e->getMessage();
+if($db->connect_errno > 0){
+    die('Unable to connect to database [' . $db->connect_error . ']');
 }
 ?>

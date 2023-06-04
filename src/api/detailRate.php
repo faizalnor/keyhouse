@@ -1,7 +1,9 @@
 <?php
 require_once "config.php";
 
-$sql = "SELECT * FROM client_list order by cl_name ASC";
+$id=$_GET['id'];
+
+$sql = "SELECT * FROM project_list where pid=$id";
 if(!$result = $db->query($sql)){
     die('There was  an error running the query [' . $db->error . ']');
 }

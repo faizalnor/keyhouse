@@ -21,22 +21,18 @@ const routes = [
         name: "Customer Rating List",
         component: () => import("src/pages/MainLayout/RatingList.vue"),
       },
+      {
+        path: "detailRate/:id/",
+        name: "Detail Rating Creation",
+        component: () => import("src/pages/MainLayout/detailRating.vue"),
+        props: true,
+      },
     ],
   },
   {
-    path: "/MainRate",
+    path: "/MainRate/:id",
     component: () => import("src/layouts/MainRate.vue"),
-    children: [
-      {
-        path: "/MainRate",
-        redirect: "/MainRate/submitRate",
-      },
-      {
-        path: "submitRate",
-        name: "Rate Submission",
-        component: () => import("src/pages/MainRate/submitRate.vue"),
-      },
-    ],
+    props: true,
   },
 
   // Always leave this as last one,

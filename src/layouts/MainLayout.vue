@@ -23,9 +23,9 @@
       dense
       bordered
       show-if-above
-      :width="200"
+      :width="250"
       :breakpoint="651"
-      class="bg-white q-pr-md"
+      class="bg-white cursor-pointer"
     >
       <q-scroll-area class="fit">
         <q-list>
@@ -36,7 +36,7 @@
             clickable
             v-ripple
             to="/admin/newRating"
-            active-class="bg-teal-1 text-teal radius"
+            active-class="bg-teal-1 text-teal"
           >
             <q-item-section avatar>
               <q-icon name="library_add" />
@@ -48,7 +48,7 @@
             clickable
             v-ripple
             to="/admin/RatingList"
-            active-class="bg-teal-1 text-teal radius"
+            active-class="bg-teal-1 text-teal"
           >
             <q-item-section avatar>
               <q-icon name="star" />
@@ -84,7 +84,13 @@
 <script>
 import { ref } from "vue";
 import { useMeta } from "quasar";
+import { LoadingBar } from "quasar";
 
+LoadingBar.setDefaults({
+  color: "teal",
+  size: "3px",
+  position: "top",
+});
 export default {
   setup() {
     const miniState = ref(true);
