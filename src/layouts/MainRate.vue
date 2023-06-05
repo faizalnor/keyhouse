@@ -63,12 +63,12 @@
         <div class="text-subtitle2 n poppins justify-evenly q-pb-md">
           Maklumat Responden
         </div>
-        <div class="row q-col-gutter-y-md">
+        <div class="row q-col-gutter-y-md q-col-gutter-x-md">
           <div class="col-12">
             <q-input
               outlined
               autofocus
-              v-model="cl_name"
+              v-model="res_name"
               stack-label
               color="indigo-10"
               type="text"
@@ -78,15 +78,74 @@
           <div class="col-12">
             <q-input
               outlined
-              v-model="cl_type"
+              v-model="res_pos"
               stack-label
               color="indigo-10"
               type="text"
               label="Jawatan"
             />
           </div>
+          <div class="col-12">
+            <q-input
+              outlined
+              v-model="ipAddress"
+              stack-label
+              color="indigo-10"
+              type="text"
+              label="IP Address"
+              readonly
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              outlined
+              v-model="deviceTypeValue"
+              stack-label
+              color="indigo-10"
+              type="text"
+              label="Device Type"
+              readonly
+              class=""
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              outlined
+              v-model="deviceModelValue"
+              stack-label
+              color="indigo-10"
+              type="text"
+              label="Device Model"
+              readonly
+              class=""
+            />
+          </div>
+
+          <div class="col-6">
+            <q-input
+              outlined
+              v-model="lat"
+              stack-label
+              color="indigo-10"
+              type="text"
+              label="Location: Latitude"
+              readonly
+            />
+          </div>
+          <div class="col-6">
+            <q-input
+              outlined
+              v-model="lon"
+              stack-label
+              color="indigo-10"
+              type="text"
+              label="Location: Longitude"
+              readonly
+            />
+          </div>
         </div>
       </div>
+
       <div class="containerX q-pa-md q-gutter-y-md">
         <div class="text-subtitle2 n poppins justify-evenly q-pb-md">
           Nilai Servis Kami
@@ -95,7 +154,7 @@
           <q-card-section>
             <div class="text-subtitle2 n text-bold">Penggunaan Bahasa</div>
             <div class="text-body2">
-              Andakah pihak kami menggunakan bahasa yang baik ketika bertutur
+              Adakah pihak kami menggunakan bahasa yang baik ketika bertutur
               dengan pihak anda?
             </div>
           </q-card-section>
@@ -137,7 +196,7 @@
               Kandungan Bahan dan Penerangan
             </div>
             <div class="text-body2">
-              Andakah pihak kami menyampaikan maklumat seperti yang diharapkan?
+              Adakah pihak kami menyampaikan maklumat seperti yang diharapkan?
             </div>
           </q-card-section>
 
@@ -245,6 +304,40 @@
       <div class="q-pa-lg"></div>
     </q-form>
     <!-- (Optional) The Header -->
+
+    <q-dialog v-model="dialog" persistent>
+      <q-card class="my-card">
+        <q-card-section class="bg-indigo-10 text-white">
+          <q-toolbar class="text-white">
+            <q-btn flat round dense icon="info" />
+            <q-toolbar-title> Privasi Data </q-toolbar-title>
+          </q-toolbar>
+        </q-card-section>
+        <q-card-section>
+          <span
+            >Kami menyimpan data anda untuk tujuan statistik prestasi kami. Data
+            yang kami kumpul adalah
+            <b> Nama, Jawatan, <i>IP Address</i> dan Lokasi.</b> Klik setuju
+            untuk teruskan atau klik tidak untuk hanya memberikan Nama dan
+            Jawatan.</span
+          >
+        </q-card-section>
+        <q-separator />
+        <q-card-actions align="right">
+          <q-btn flat glossy class="bg-grey-3 text-grey-10" @click="closeDialog"
+            >Tidak</q-btn
+          >
+          <q-btn
+            flat
+            glossy
+            class="bg-indigo-10 text-white text-bold"
+            @click="acceptPDPA"
+            >Setuju</q-btn
+          >
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <q-footer
       bordered
       class="bg-white text-grey-7 no-shadow"
@@ -273,6 +366,7 @@ import { api } from "boot/axios";
 import { LoadingBar } from "quasar";
 import { ref } from "vue";
 import { useMeta } from "quasar";
+
 LoadingBar.setDefaults({
   color: "indigo-10",
   size: "3px",
@@ -286,6 +380,7 @@ export default {
   },
   setup() {
     const title = ref("Customer Rating");
+    const dialog = ref(true);
 
     useMeta(() => {
       return {
@@ -294,21 +389,34 @@ export default {
     });
     return {
       api,
+      dialog,
     };
   },
   data: function () {
     return {
       list: "",
+      gettingLocation: false,
+      errorStr: null,
       pl_agencyName: "",
       pl_title: "",
       pl_date: "",
-      cl_name: "",
-      cl_type: "",
+      res_name: "",
+      res_pos: "",
+      deviceModelValue: "",
+      deviceTypeValue: "",
+      ipAddress: "",
+      lat: null,
+      lon: null,
       bahasaRate: ref(0),
       bahanRate: ref(0),
       qnaRate: ref(0),
       tambahbaikRate: "",
+      rt_setuju: "",
     };
+  },
+  created() {
+    this.deviceTypeValue = this.getDeviceType();
+    this.deviceModelValue = this.getDeviceModel();
   },
   mounted() {
     api
@@ -331,12 +439,106 @@ export default {
           bahanRates: this.bahanRate,
           qnaRates: this.qnaRate,
           tambahbaikRates: this.tambahbaikRate,
+          pl_id: this.id,
         })
         .then((response) => {
           const newID = response.data;
           console.log(newID);
           window.location.href = `#/admin/detailRate/${newID}`;
         });
+    },
+
+    getLocation() {
+      //start geolocation
+      if (!("geolocation" in navigator)) {
+        this.errorStr = "Geolocation is not available.";
+        return;
+      }
+      this.gettingLocation = true;
+      // get position
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.gettingLocation = false;
+          this.lat = pos.coords.latitude;
+          this.lon = pos.coords.longitude;
+        },
+        (err) => {
+          this.gettingLocation = false;
+          this.errorStr = err.message;
+        }
+      );
+    },
+    detectDevice() {
+      this.deviceTypeValue = this.getDeviceType();
+      this.deviceModelValue = this.getDeviceModel();
+    },
+    getDeviceType() {
+      if (this.isDesktopMac()) {
+        return "Desktop Mac";
+      } else if (this.isDesktopWindows()) {
+        return "Desktop Windows";
+      } else if (this.$q.platform.is.desktop) {
+        return "Desktop";
+      } else if (this.$q.platform.is.mobile) {
+        return "Mobile";
+      } else if (this.$q.platform.is.tablet) {
+        return "Tablet";
+      } else {
+        return "Unknown";
+      }
+    },
+    isDesktopMac() {
+      return (
+        navigator.platform.toUpperCase().indexOf("MAC") >= 0 &&
+        window.matchMedia("(pointer: fine)").matches
+      );
+    },
+    isDesktopWindows() {
+      return (
+        navigator.platform.toUpperCase().indexOf("WIN") >= 0 &&
+        window.matchMedia("(pointer: fine)").matches
+      );
+    },
+    getDeviceModel() {
+      if (this.$q.platform.is.desktop) {
+        if (this.isDesktopMac()) {
+          return "macOS";
+        } else if (this.isDesktopWindows()) {
+          return "Windows";
+        } else {
+          return "Unknown";
+        }
+      } else if (this.$q.platform.is.ios) {
+        return "iPhone";
+      } else {
+        return "Android";
+      }
+    },
+    getIPAddress() {
+      api
+        .get("https://api.ipify.org?format=json")
+        .then((response) => {
+          this.ipAddress = response.data.ip;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    acceptPDPA() {
+      this.rt_setuju = "Ya";
+      this.dialog = false;
+      this.getIPAddress();
+      this.detectDevice();
+      this.getLocation();
+    },
+    closeDialog() {
+      this.dialog = false;
+      this.lon = "-";
+      this.lat = "-";
+      this.deviceModelValue = "-";
+      this.deviceTypeValue = "-";
+      this.ipAddress = "-";
+      this.rt_setuju = "Tidak";
     },
   },
 };
