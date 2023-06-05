@@ -75,7 +75,7 @@
                   :rules="[(val) => !!val || 'Field is required']"
                 />
               </div>
-              <div class="col-8">
+              <div class="col-8 text-right text-bold">
                 <div>
                   <q-btn label="Submit" type="submit" glossy color="teal" />
                 </div>
