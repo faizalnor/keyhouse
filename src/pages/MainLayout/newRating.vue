@@ -77,7 +77,13 @@
               </div>
               <div class="col-8 text-right text-bold">
                 <div>
-                  <q-btn label="Submit" type="submit" glossy color="teal" />
+                  <q-btn
+                    label="Submit"
+                    type="submit"
+                    class="text-bold"
+                    glossy
+                    color="teal"
+                  />
                 </div>
               </div>
             </div>

@@ -29,8 +29,8 @@
               color="indigo-10"
               stack-label
               type="text"
-              readonly
               input-class="text-bold"
+              readonly
             />
           </div>
           <div class="col-12">
@@ -41,8 +41,8 @@
               color="indigo-10"
               stack-label
               type="text"
-              readonly
               input-class="text-bold"
+              readonly
             />
           </div>
           <div class="col-12">
@@ -53,8 +53,8 @@
               color="indigo-10"
               type="date"
               label="Tarikh"
-              readonly
               input-class="text-bold"
+              readonly
             />
           </div>
         </div>
@@ -317,9 +317,12 @@
           <span
             >Kami menyimpan data anda untuk tujuan statistik prestasi kami. Data
             yang kami kumpul adalah
-            <b> Nama, Jawatan, <i>IP Address</i> dan Lokasi.</b> Klik setuju
-            untuk teruskan atau klik tidak untuk hanya memberikan Nama dan
-            Jawatan.</span
+            <b>
+              Nama, Jawatan, <i>IP Address</i>, <i>Device Type</i>,
+              <i>Device Model</i> dan Lokasi.</b
+            >
+            Klik setuju untuk teruskan atau klik tidak untuk hanya memberikan
+            Nama dan Jawatan.</span
           >
         </q-card-section>
         <q-separator />
@@ -333,6 +336,33 @@
             class="bg-indigo-10 text-white text-bold"
             @click="acceptPDPA"
             >Setuju</q-btn
+          >
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="afterSubmit" persistent>
+      <q-card class="my-card">
+        <q-card-section class="bg-teal-6 text-white">
+          <q-toolbar class="text-white">
+            <q-btn flat round dense icon="check_circle" />
+            <q-toolbar-title> Data telah dikemaskini </q-toolbar-title>
+          </q-toolbar>
+        </q-card-section>
+        <q-card-section>
+          <span
+            >Kami telah menerima respon dari pihak anda. Terima kasih kerana
+            dapat meluangkan masa untuk memberi penilaian ke atas servis kami.
+            Sehingga jumpa lagi!</span
+          >
+        </q-card-section>
+        <q-separator />
+        <q-card-actions align="right">
+          <q-btn
+            flat
+            glossy
+            class="bg-teal text-white text-bold"
+            @click="tutupInfo"
+            >Tutup</q-btn
           >
         </q-card-actions>
       </q-card>
@@ -381,6 +411,7 @@ export default {
   setup() {
     const title = ref("Customer Rating");
     const dialog = ref(true);
+    const afterSubmit = ref(false);
 
     useMeta(() => {
       return {
@@ -390,11 +421,12 @@ export default {
     return {
       api,
       dialog,
+      afterSubmit,
     };
   },
   data: function () {
     return {
-      list: "",
+      list: [],
       gettingLocation: false,
       errorStr: null,
       pl_agencyName: "",
@@ -410,7 +442,7 @@ export default {
       bahasaRate: ref(0),
       bahanRate: ref(0),
       qnaRate: ref(0),
-      tambahbaikRate: "",
+      tambahbaikRate: ref(""),
       rt_setuju: "",
     };
   },
@@ -418,34 +450,35 @@ export default {
     this.deviceTypeValue = this.getDeviceType();
     this.deviceModelValue = this.getDeviceModel();
   },
-  mounted() {
-    api
-      .get("detailRate.php?id=" + this.id)
-      .then((response) => {
-        this.list = response.data;
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  },
+  mounted() {},
   methods: {
+    tutupInfo() {
+      window.open("https://www.centurysoftware.com.my", "_self");
+    },
     handleSubmit() {
       api
-        .post("addNewProject.php", {
-          pl_agencyNames: this.pl_agencyName.cl_name,
+        .post("submitRate.php", {
+          pl_id: this.id,
+          pl_agencyNames: this.pl_agencyName,
           pl_titles: this.pl_title,
           pl_dates: this.pl_date,
-          bahasaRates: this.bahasaRate,
-          bahanRates: this.bahanRate,
-          qnaRates: this.qnaRate,
-          tambahbaikRates: this.tambahbaikRate,
-          pl_id: this.id,
+          res_name: this.res_name,
+          res_pos: this.res_pos,
+          rt_lat: this.lat,
+          rt_lon: this.lon,
+          rt_ipAddress: this.ipAddress,
+          rt_deviceType: this.deviceTypeValue,
+          rt_deviceModel: this.deviceModelValue,
+          rt_bahasaRates: this.bahasaRate,
+          rt_bahanRates: this.bahanRate,
+          rt_qnaRates: this.qnaRate,
+          rt_tambahbaikRates: this.tambahbaikRate,
+          rt_setuju: this.rt_setuju,
         })
         .then((response) => {
           const newID = response.data;
-          console.log(newID);
-          window.location.href = `#/admin/detailRate/${newID}`;
-        });
+        })
+        .finally(() => (this.afterSubmit = true));
     },
 
     getLocation() {
@@ -527,18 +560,35 @@ export default {
     acceptPDPA() {
       this.rt_setuju = "Ya";
       this.dialog = false;
+      this.getDetailRate();
       this.getIPAddress();
       this.detectDevice();
       this.getLocation();
     },
     closeDialog() {
       this.dialog = false;
+      this.getDetailRate();
       this.lon = "-";
       this.lat = "-";
       this.deviceModelValue = "-";
       this.deviceTypeValue = "-";
       this.ipAddress = "-";
       this.rt_setuju = "Tidak";
+    },
+
+    getDetailRate() {
+      api
+        .get("detailRate.php?id=" + this.id)
+        .then((response) => {
+          const list = response.data;
+          this.list = response.data;
+          this.pl_agencyName = this.list[0].pl_agencyName;
+          this.pl_title = this.list[0].pl_title;
+          this.pl_date = this.list[0].pl_date;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     },
   },
 };
