@@ -8,7 +8,7 @@ import axios from "axios";
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
-  baseURL: "http://pslab.mindabytes.my/dist/spa/api",
+  baseURL: "https://pslab.mindabytes.my/apis",
 });
 
 export default boot(({ app }) => {

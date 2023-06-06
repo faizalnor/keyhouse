@@ -14,21 +14,6 @@
           <q-form @submit="handleSubmit">
             <div class="row q-gutter-md justify-evenly">
               <div class="col-8">
-                <div v-if="errorStr">
-                  Sorry, but the following error occurred: {{ errorStr }}
-                </div>
-
-                <div v-if="gettingLocation">
-                  <i>Getting your location...</i>
-                </div>
-
-                <div v-if="location">
-                  Your location data is {{ location.coords.latitude }},
-                  {{ location.coords.longitude }}
-                </div>
-              </div>
-
-              <div class="col-8">
                 <q-select
                   clearable
                   clear-icon="close"
@@ -168,7 +153,7 @@ export default {
         .then((response) => {
           const newID = response.data;
           console.log(newID);
-          window.location.href = `#/admin/detailRate/${newID}`;
+          this.$router.push({ path: `/admin/detailRate/${newID}` });
         });
     },
   },
